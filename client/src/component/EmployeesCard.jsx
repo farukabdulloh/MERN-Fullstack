@@ -4,8 +4,6 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this employee?")) return;
 
-    // Nanti ketika backend sudah siap, proses delete API ditaruh di sini.
-    // Untuk sementara:
     onDelete();
   };
 
@@ -14,9 +12,9 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
       {/* Profile Area */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
+      <div className="relative aspect-4/3 w-full overflow-hidden bg-linear-to-br from-slate-100 to-slate-50">
         <div className="flex h-full w-full items-center justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-indigo-400 shadow-sm">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-400 shadow-sm">
             <span className="text-2xl font-semibold uppercase text-white">{initials}</span>
           </div>
         </div>
@@ -35,7 +33,7 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
 
       {/* Action Buttons */}
       {!employee.isDelete && (
-        <div className="absolute inset-0 flex items-end justify-center gap-3 bg-gradient-to-t from-indigo-700/20 via-transparent to-transparent pb-6 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <div className="absolute inset-0 flex items-end justify-center gap-3 bg-linear-to-t from-indigo-700/20 via-transparent to-transparent pb-6 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <button
             type="button"
             onClick={() => onEdit(employee)}

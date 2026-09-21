@@ -29,7 +29,8 @@ const SideBar = () => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const role = "ADMIN" || "EMPLOYEE";
+  const role = "EMPLOYEE";
+  console.log(role);
 
   const navItems = [
     {
@@ -191,15 +192,24 @@ const SideBar = () => {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-white/5 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white lg:flex">
+      <aside
+        className="hidden h-full w-64 shrink-0 flex-col border-r border-white/5 bg-linear-to-b from-slate-900 
+      via-slate-900 to-slate-950 text-white lg:flex"
+      >
         {sidebarContent}
       </aside>
 
       {/* Mobile Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shadow-2xl transition-transform duration-300 lg:hidden ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`
+    fixed inset-y-0 left-0 z-50
+    flex w-72 flex-col
+    bg-linear-to-b from-slate-900 via-slate-900 to-slate-950
+    text-white shadow-2xl
+    transition-transform duration-300
+    lg:hidden
+    ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+  `}
       >
         {sidebarContent}
       </aside>
