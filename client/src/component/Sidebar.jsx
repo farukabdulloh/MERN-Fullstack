@@ -29,7 +29,7 @@ const SideBar = () => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const role = "EMPLOYEE";
+  const role = "ADMIN" || "EMPLOYEE";
   console.log(role);
 
   const navItems = [
