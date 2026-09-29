@@ -1,10 +1,16 @@
 import { PencilIcon, TrashIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../api/axios";
 
 const EmployeesCard = ({ employee, onDelete, onEdit }) => {
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this employee?")) return;
-
-    onDelete();
+    try {
+      await api.delete(`/employees/${employee.id}`);
+      onDelete();
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.messgae);
+    }
   };
 
   const initials = `${employee.firstName?.[0] || ""}${employee.lastName?.[0] || ""}`;
@@ -14,9 +20,19 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
       {/* Profile Area */}
       <div className="relative aspect-4/3 w-full overflow-hidden bg-linear-to-br from-slate-100 to-slate-50">
         <div className="flex h-full w-full items-center justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-400 shadow-sm">
-            <span className="text-2xl font-semibold uppercase text-white">{initials}</span>
-          </div>
+          {" "}
+          {employee.profileImage ? (
+            <img
+              src={`http://localhost:4000/${employee.profileImage.replaceAll("\\", "/")}`}
+              alt={`${employee.firstName} ${employee.lastName}`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-400 shadow-sm">
+              {" "}
+              <span className="text-2xl font-semibold uppercase text-white"> {initials} </span>{" "}
+            </div>
+          )}{" "}
         </div>
       </div>
 

@@ -1,4 +1,3 @@
-import { now } from 'mongoose';
 import { inngest } from '../inngest/index.js';
 import Attendance from '../models/Attendance.js';
 import Employee from '../models/Employee.js'
@@ -16,17 +15,21 @@ export const clockInOut = async (req, res) => {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
+        const now = new Date()
+
         const existing = await Attendance.findOne({
             employeeId: employee._id,
             date: today
         })
         if (!existing) {
-            const isLate = now.getHours() >= 0 && now.getMinutes() > 0;
+            const isLate =
+                now.getHours() > 9 ||
+                (now.getHours() === 9 && now.getMinutes() > 0);
             const attendance = await Attendance.create({
                 employeeId: employee._id,
                 date: today,
                 checkIn: now,
-                staus: isLate ? "LATE" : 'PRESENT'
+                status: isLate ? "LATE" : 'PRESENT'
             })
 
             await inngest.send({
@@ -42,9 +45,9 @@ export const clockInOut = async (req, res) => {
                 data: attendance
             })
         } else if (!existing.checkOut) {
-            const checkInTime = new Date(excisting.checkIn).getTime()
+            const checkInTime = new Date(existing.checkIn).getTime()
             const diffMs = now.getTime() - checkInTime;
-            const diffHours = diffms / (1000 * 60 * 60)
+            const diffHours = diffMs / (1000 * 60 * 60)
 
             existing.checkOut = now
 
@@ -79,7 +82,7 @@ export const getAttendance = async (req, res) => {
         const limit = parseInt(req.query.limit || 30)
         const history = await Attendance.find({ employeeId: employee._id }).sort({ date: -1 }).limit(limit)
 
-        return res.josn({
+        return res.json({
             date: history,
             employee: { isDeleted: employee.isDeleted }
         })

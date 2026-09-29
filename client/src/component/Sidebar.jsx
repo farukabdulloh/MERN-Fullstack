@@ -10,10 +10,13 @@ import {
   XIcon,
   BriefcaseBusinessIcon,
   LogOutIcon,
+  Loader2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import api from "../api/axios";
 import { dummyProfileData } from "../assets/assets";
+import { useAuth } from "../context/AuthContext";
 
 const SideBar = () => {
   const { pathname } = useLocation();
@@ -21,15 +24,25 @@ const SideBar = () => {
   const [userName, setUserName] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const { user, loading, logout } = useAuth();
+
   useEffect(() => {
-    setUserName(dummyProfileData.firstName + " " + dummyProfileData.lastName);
+    api.get("/profile").then(({ data }) => {
+      if (data.firstName) {
+        setUserName(`${data.firstName} ${data.lastName || ""}`.trim());
+      }
+    });
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const role = "ADMIN" || "EMPLOYEE";
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const role = user?.role;
   console.log(role);
 
   const navItems = [
@@ -39,23 +52,31 @@ const SideBar = () => {
       icon: LayoutDashboardIcon,
     },
 
-    role === "ADMIN"
-      ? {
-          name: "Employee",
-          href: "/Employees",
-          icon: UserIcon,
-        }
-      : {
-          name: "Leave",
-          href: "/Leave",
-          icon: FileTextIcon,
-        },
-
-    {
-      name: "Attendance",
-      href: "/Attendance",
-      icon: CalendarCheckIcon,
-    },
+    ...(role === "ADMIN"
+      ? [
+          {
+            name: "Employee",
+            href: "/Employees",
+            icon: UserIcon,
+          },
+          {
+            name: "Leave",
+            href: "/Leave",
+            icon: FileTextIcon,
+          },
+        ]
+      : [
+          {
+            name: "Attendance",
+            href: "/Attendance",
+            icon: CalendarCheckIcon,
+          },
+          {
+            name: "Leave",
+            href: "/Leave",
+            icon: FileTextIcon,
+          },
+        ]),
 
     {
       name: "Paylips",
@@ -71,6 +92,7 @@ const SideBar = () => {
   ];
 
   const handleLogOut = () => {
+    logout();
     window.location.href = "/login";
   };
 
@@ -130,31 +152,38 @@ const SideBar = () => {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 overflow-y-auto px-3">
-        {navItems.map(item => {
-          const isActive = pathname.startsWith(item.href);
+        {loading ? (
+          <div className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-400">
+            <Loader2 className="animate-spin w-4 h-4" />
+            <span className="text-sm">Loading...</span>
+          </div>
+        ) : (
+          navItems.map(item => {
+            const isActive = pathname.startsWith(item.href);
 
-          return (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
-                isActive
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                  : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-              }`}
-            >
-              <item.icon
-                className={`h-5 w-5 shrink-0 transition-colors duration-200 ${
-                  isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300"
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200 ${
+                  isActive
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                 }`}
-              />
+              >
+                <item.icon
+                  className={`h-5 w-5 shrink-0 transition-colors duration-200 ${
+                    isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300"
+                  }`}
+                />
 
-              <span className="flex-1">{item.name}</span>
+                <span className="flex-1">{item.name}</span>
 
-              {isActive && <ChevronRightIcon className="h-4 w-4 text-indigo-200" />}
-            </Link>
-          );
-        })}
+                {isActive && <ChevronRightIcon className="h-4 w-4 text-indigo-200" />}
+              </Link>
+            );
+          })
+        )}
       </nav>
 
       {/* Logout */}

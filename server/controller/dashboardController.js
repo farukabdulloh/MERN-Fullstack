@@ -25,7 +25,7 @@ export const getDashboard = async (req, res) => {
             return res.json({
                 role: 'ADMIN',
                 totalEmployees,
-                totalDepartements: DEPARTMENTS.length,
+                totalDepartments: DEPARTMENTS.length,
                 todayAttendance,
                 pendingLeaves,
             })

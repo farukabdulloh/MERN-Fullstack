@@ -19,7 +19,7 @@ const EmployeeDashboard = ({ data }) => {
     },
     {
       icon: DollarSignIcon,
-      value: data.latestPaysLips ? `$${data.latestPaysLips.netSalary?.toLocaleString()}` : "N/A",
+      value: data.latestPaysLip ? `$${data.latestPayslip.netSalary?.toLocaleString()}` : "N/A",
       title: "Latest Payslip",
       subtitle: "Most Recent Payout",
     },

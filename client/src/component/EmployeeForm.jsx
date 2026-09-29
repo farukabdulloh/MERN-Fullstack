@@ -1,16 +1,42 @@
 import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 import { DEPARTMENTS } from "../assets/assets";
 
 const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const isEditMode = !!initialData;
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+
+    if (isEditMode) {
+      const pwd = formData.get("password");
+
+      if (!pwd) {
+        formData.delete("password");
+      }
+    }
+
+    try {
+      const url = isEditMode ? `/employees/${initialData.id}` : "/employees";
+
+      const method = isEditMode ? "put" : "post";
+
+      await api[method](url, formData);
+
+      onSuccess ? onSuccess() : navigate("/employees");
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,6 +95,20 @@ const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
               defaultValue={initialData?.joinDate ? new Date(initialData.joinDate).toISOString().split("T")[0] : ""}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
+          </div>
+
+          {/* Profile Photo */}
+          <div className="sm:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-slate-700">Profile Photo</label>
+
+            <input
+              name="profileImage"
+              type="file"
+              accept="image/*"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
+            />
+
+            <p className="mt-1 text-xs text-slate-400">Upload a profile photo (JPG, PNG, or WEBP).</p>
           </div>
 
           {/* Bio */}

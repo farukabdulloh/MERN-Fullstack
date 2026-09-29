@@ -6,36 +6,48 @@ import LeaveApplication from "../models/LeaveApplication.js"
 // POST /api/leaves
 export const createLeave = async (req, res) => {
     try {
-        const session = req.session
+        const session = req.session;
+
         const employee = await Employee.findOne({
             userId: session.userId
-        })
-        if (!employee) return res.status(404).json({ error: 'Employee not found' })
+        });
+
+        if (!employee) {
+            return res.status(404).json({
+                error: "Employee not found"
+            });
+        }
+
         if (employee.isDeleted) {
             return res.status(403).json({
-                error: 'Your account is deactivated. You cannot apply for leave'
-            })
+                error: "Your account is deactivated. You cannot apply for leave"
+            });
         }
 
-        const { type, startDate, endDate, reason } = req.body
+        const { type, startDate, endDate, reason } = req.body;
+
         if (!type || !startDate || !endDate || !reason) {
             return res.status(400).json({
-                error: 'Missing fields'
-            })
+                error: "Missing fields"
+            });
         }
 
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        if (new Date(startDate) <= today || new Date(endDate) <= today) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (
+            new Date(startDate) <= today ||
+            new Date(endDate) <= today
+        ) {
             return res.status(400).json({
-                error: 'Leave dates must be in the future'
-            })
+                error: "Leave dates must be in the future"
+            });
         }
 
         if (new Date(endDate) < new Date(startDate)) {
             return res.status(400).json({
-                error: 'End date cannot be before start date'
-            })
+                error: "End date cannot be before start date"
+            });
         }
 
         const leave = await LeaveApplication.create({
@@ -44,22 +56,35 @@ export const createLeave = async (req, res) => {
             startDate: new Date(startDate),
             endDate: new Date(endDate),
             reason,
-            status: 'PENDING'
-        })
+            status: "PENDING"
+        });
 
         await inngest.send({
             name: "leave/pending",
             data: {
                 LeaveApplicationId: leave._id
             }
-        })
+        });
 
-        return res.json({ success: true, data: leave })
+        return res.json({
+            success: true,
+            data: leave
+        });
 
     } catch (error) {
-        return res.status(500).json({ error: 'Failed' })
+        console.error("CREATE LEAVE ERROR:", error);
+
+        if (res.headersSent) {
+            return;
+        }
+
+        return res.status(500).json({
+            error: "Failed to create leave",
+            details: error.message
+        });
     }
-}
+};
+
 // Get leave
 // GET /api/leaves
 export const getLeave = async (req, res) => {

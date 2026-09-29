@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import { dummyEmployeeDashboardData, dummyAdminDashboardData } from "../assets/assets";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
 import AdminDashboard from "../component/AdminDashboard";
 import EmployeeDashboard from "../component/EmployeeDashboard";
 import Loading from "../component/Loading";
@@ -10,21 +9,22 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setData(dummyAdminDashboardData);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    api
+      .get("/dashboard")
+      .then(res => {
+        setData(res.data);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   if (loading) return <Loading />;
-  if (!data) return <p className="text-center text-slate-500 py-12">Failed to load Dashboard</p>;
 
-  if (data.role === "ADMIN") {
-    return <AdminDashboard data={data} />;
-  } else {
-    return <EmployeeDashboard data={data} />;
-  }
-  return <div>Dashboard</div>;
+  return data?.role === "ADMIN" ? <AdminDashboard data={data} /> : <EmployeeDashboard data={data} />;
 };
 
 export default Dashboard;
