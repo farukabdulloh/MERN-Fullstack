@@ -15,21 +15,27 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../api/axios";
-import { dummyProfileData } from "../assets/assets";
 import { useAuth } from "../context/AuthContext";
 
 const SideBar = () => {
   const { pathname } = useLocation();
 
   const [userName, setUserName] = useState("");
+  const [userImage, setUserImage] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { user, loading, logout } = useAuth();
 
   useEffect(() => {
     api.get("/profile").then(({ data }) => {
+      console.log("PROFILE DATA:", data);
+
       if (data.firstName) {
         setUserName(`${data.firstName} ${data.lastName || ""}`.trim());
+      }
+
+      if (data.profileImage) {
+        setUserImage(data.profileImage);
       }
     });
   }, []);
@@ -128,8 +134,16 @@ const SideBar = () => {
       {userName && (
         <div className="mx-3 mt-4 rounded-xl border border-white/10 bg-white/5 p-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10">
-              <span className="text-sm font-semibold uppercase text-indigo-400">{userName.charAt(0)}</span>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-indigo-500/20 bg-indigo-500/10">
+              {userImage ? (
+                <img
+                  src={`${import.meta.env.VITE_BASE_URL}/${userImage.replaceAll("\\", "/")}`}
+                  alt={userName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-semibold uppercase text-indigo-400">{userName.charAt(0)}</span>
+              )}
             </div>
 
             <div className="min-w-0">

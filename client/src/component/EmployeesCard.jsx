@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon, RotateCcw, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/axios";
 
@@ -9,7 +9,32 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
       await api.delete(`/employees/${employee.id}`);
       onDelete();
     } catch (error) {
-      toast.error(error.response?.data?.error || error.messgae);
+      toast.error(error.response?.data?.error || error.message);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!confirm("Are you sure you want to restore this employee?")) return;
+
+    try {
+      await api.patch(`/employees/${employee.id}/restore`);
+      onDelete();
+      toast.success("Employee restored successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    }
+  };
+  const handlePermanentDelete = async () => {
+    if (!confirm(`Permanently delete ${employee.firstName} ${employee.lastName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await api.delete(`/employees/${employee.id}/permanent`);
+      onDelete();
+      toast.success("Employee permanently deleted");
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
     }
   };
 
@@ -25,7 +50,9 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
             <img
               src={`http://localhost:4000/${employee.profileImage.replaceAll("\\", "/")}`}
               alt={`${employee.firstName} ${employee.lastName}`}
-              className="h-full w-full object-cover"
+              className={`h-full w-full object-cover transition-all duration-200 ${
+                employee.isDeleted ? "opacity-60 grayscale" : ""
+              }`}
             />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-400 shadow-sm">
@@ -42,13 +69,13 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
           {employee.department || "Remote"}
         </span>
 
-        {employee.isDelete && (
+        {employee.isDeleted && (
           <span className="rounded-lg bg-rose-500 px-2.5 py-1 text-xs font-medium text-white shadow-sm">DELETED</span>
         )}
       </div>
 
       {/* Action Buttons */}
-      {!employee.isDelete && (
+      {!employee.isDeleted ? (
         <div className="absolute inset-0 flex items-end justify-center gap-3 bg-linear-to-t from-indigo-700/20 via-transparent to-transparent pb-6 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <button
             type="button"
@@ -66,6 +93,26 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
             title="Delete employee"
           >
             <TrashIcon className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="absolute inset-0 flex items-end justify-center bg-linear-to-t from-emerald-700/20 via-transparent to-transparent pb-6 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={handleRestore}
+            className="rounded-xl bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:text-emerald-600"
+            title="Restore employee"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePermanentDelete}
+            className="rounded-xl bg-white/90 p-2.5 text-slate-700 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:text-red-700"
+            title="Permanently delete employee"
+          >
+            <Trash2 className="h-4 w-4" />
           </button>
         </div>
       )}

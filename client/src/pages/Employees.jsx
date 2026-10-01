@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { dummyEmployeeData, DEPARTMENTS } from "../assets/assets";
+import { DEPARTMENTS } from "../assets/assets";
 import { Plus, Search, X, UserPlus, UserPenIcon } from "lucide-react";
 import EmployeesCard from "../component/EmployeesCard";
 import EmployeeForm from "../component/EmployeeForm";
@@ -12,24 +12,33 @@ const employees = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectDept, setSelectDept] = useState("");
+  const [selectStatus, setSelectStatus] = useState("");
   const [editEmployee, setEditEmployee] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const fetchEmployees = useCallback(async () => {
     try {
-      const url = selectDept ? `employees?department=${selectDept}` : "/employees";
-      const res = await api.get(url);
+      const params = new URLSearchParams();
+
+      if (selectStatus) {
+        params.set("status", selectStatus);
+      }
+
+      if (selectDept) {
+        params.set("department", selectDept);
+      }
+      const res = await api.get(`/employees?${params.toString()}`);
       setEmployee(res.data);
     } catch (error) {
       console.error("Failed to fetch employees");
     } finally {
       setLoading(false);
     }
-  }, [selectDept]);
+  }, [selectDept, selectStatus]);
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]);
 
   const filtered = employee.filter(emp =>
     `${emp.firstName} ${emp.lastName} ${emp.position}`.toLowerCase().includes(search.toLowerCase())
@@ -78,6 +87,17 @@ const employees = () => {
               {deptName}
             </option>
           ))}
+        </select>
+
+        {/* Status Filter */}
+        <select
+          value={selectStatus}
+          onChange={e => setSelectStatus(e.target.value)}
+          className="w-full sm:w-40 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="deleted">Deleted</option>
         </select>
       </div>
       {/* Employee Cards */}
@@ -147,7 +167,7 @@ const employees = () => {
                 setEditEmployee(null);
                 fetchEmployees();
               }}
-              onCancel={() => setShowCreateEmployee(null)}
+              onCancel={() => setShowCreateModal(false)}
             />
           </div>
         </div>

@@ -1,5 +1,12 @@
 import { Router } from 'express';
-import { getEmployees, createEmployees, updateEmployees, deleteEmployees } from '../controller/employeeController.js';
+import {
+    getEmployees,
+    createEmployees,
+    updateEmployees,
+    deleteEmployees,
+    restoreEmployee,
+    permanentDeleteEmployee
+} from '../controller/employeeController.js';
 import { protect, protectAdmin } from '../middleware/auth.js';
 import multer from 'multer';
 
@@ -18,5 +25,12 @@ employeesRouter.put(
     updateEmployees
 )
 employeesRouter.delete('/:id', protect, protectAdmin, deleteEmployees)
+employeesRouter.patch('/:id/restore', protect, protectAdmin, restoreEmployee)
+employeesRouter.delete(
+    '/:id/permanent',
+    protect,
+    protectAdmin,
+    permanentDeleteEmployee
+);
 
 export default employeesRouter;

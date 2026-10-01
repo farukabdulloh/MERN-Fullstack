@@ -6,20 +6,31 @@ import User from "../models/User.js";
 // GET /api/employees
 export const getEmployees = async (req, res) => {
     try {
-        const { department } = req.query;
+        const { department, status } = req.query;
 
-        const where = {
-            isDeleted: false,
-        };
+        const where = {};
+
+        if (status === "deleted") {
+            where.isDeleted = true;
+        } else if (status === 'active') {
+            where.isDeleted = false
+        }
 
         if (department) {
             where.department = department;
         }
 
         const employees = await Employee.find(where)
-            .sort({ createdAt: -1 })
             .populate("userId", "email role")
             .lean();
+
+        employees.sort((a, b) => {
+            if (a.isDeleted !== b.isDeleted) {
+                return a.isDeleted ? 1 : -1;
+            }
+
+            return a.firstName.localeCompare(b.firstName);
+        });
 
         const result = employees.map((emp) => ({
             ...emp,
@@ -173,3 +184,67 @@ export const deleteEmployees = async (req, res) => {
             ({ error: 'Failed to delete employee' })
     }
 }
+// Restore employee
+// PATCH /api/employees/:id/restore
+export const restoreEmployee = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const employee = await Employee.findById(id);
+
+        if (!employee) {
+            return res.status(404).json({
+                error: "Employee not found"
+            });
+        }
+
+        employee.isDeleted = false;
+        employee.employmentStatus = "ACTIVE";
+
+        await employee.save();
+
+        return res.json({
+            success: true,
+            employee
+        });
+
+    } catch (error) {
+        console.error("RESTORE EMPLOYEE ERROR:", error);
+
+        return res.status(500).json({
+            error: "Failed to restore employee"
+        });
+    }
+};
+// Permanent Delete employee
+export const permanentDeleteEmployee = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const employee = await Employee.findById(id);
+
+        if (!employee) {
+            return res.status(404).json({
+                error: "Employee not found"
+            });
+        }
+
+        await Employee.findByIdAndDelete(id);
+
+        if (employee.userId) {
+            await User.findByIdAndDelete(employee.userId);
+        }
+
+        return res.json({
+            success: true,
+            message: "Employee permanently deleted"
+        });
+
+    } catch (error) {
+        console.error("PERMANENT DELETE EMPLOYEE ERROR:", error);
+
+        return res.status(500).json({
+            error: "Failed to permanently delete employee"
+        });
+    }
+};

@@ -12,7 +12,7 @@ export const createPayslips = async (req, res) => {
         }
 
         const netSalary = Number(basicSalary) + Number
-            (allowances || 0) - Number(deduction || 0);
+            (allowances || 0) - Number(deductions || 0);
 
         const payslip = await Paylips.create({
             employeeId,

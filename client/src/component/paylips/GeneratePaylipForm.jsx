@@ -1,5 +1,7 @@
 import { CalendarDays, Loader2, Plus, User, X } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import api from "../../api/axios";
 
 const GeneratePaylipForm = ({ employees, onSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,14 +22,23 @@ const GeneratePaylipForm = ({ employees, onSuccess }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      onSuccess?.();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      await api.post("/paylips", data);
       setIsOpen(false);
-    }, 1000);
+      onSuccess();
+    } catch (error) {
+      console.error("GENERATE PAYSLIP ERROR:", error);
+      console.error("RESPONSE:", error?.response?.data);
+
+      toast.error(error?.response?.data?.error || error?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,9 +81,10 @@ const GeneratePaylipForm = ({ employees, onSuccess }) => {
               id="employeeId"
               name="employeeId"
               required
+              defaultValue=""
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition-all duration-200 hover:border-slate-300 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select employee
               </option>
 
