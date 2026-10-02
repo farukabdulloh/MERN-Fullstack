@@ -11,7 +11,7 @@ import { protect, protectAdmin } from '../middleware/auth.js';
 import multer from 'multer';
 
 const upload = multer({
-    dest: "uploads/"
+    dest: "/tmp/uploads/"
 })
 const employeesRouter = Router();
 
