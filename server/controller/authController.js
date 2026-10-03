@@ -1,5 +1,5 @@
 import User from "../models/User.js"
-import bcyrpt from 'bcrypt'
+import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken'
 
 // Login for employee and admin
@@ -25,7 +25,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ error: 'Not authorized as Employee' })
         }
 
-        const isValid = await bcyrpt.compare(password, user.password)
+        const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
             return res.status(400).
                 json({ error: 'Invalid credentials' })
@@ -58,23 +58,50 @@ export const session = (req, res) => {
 // POST /api/auth/change-password
 export const changePassword = async (req, res) => {
     try {
-        const session = req.session
-        const { currentPassword, newPassword } = req.body
-        if (!currentPassword || !newPassword) {
-            return res.status(400).json({ error: 'Both passwords are required' })
-        }
-        const user = await User.findById(session.userId)
-        if (!user) return res.status(404).json({ error: 'User not found' })
+        const session = req.session;
+        const { currentPassword, newPassword } = req.body;
 
-        const isValid = await bcyrpt.compare(currentPassword, user.password)
-        if (!isValid) {
-            return res.status(400).
-                json({ error: 'password is incorrect' })
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                error: "Both passwords are required"
+            });
         }
-        const hashad = await bcyrpt.hash(newPassword, 10)
-        await User.findByIdAndUpadate(session.userId, { password: hashed })
-        return res.json({ success: true })
+
+        const user = await User.findById(session.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        const isValid = await bcrypt.compare(
+            currentPassword,
+            user.password
+        );
+
+        if (!isValid) {
+            return res.status(400).json({
+                error: "Password is incorrect"
+            });
+        }
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+
+        await User.findByIdAndUpdate(
+            session.userId,
+            { password: hashed }
+        );
+
+        return res.json({
+            success: true
+        });
+
     } catch (error) {
-        return res.status(500).json({ error: 'Failed to change' })
+        console.error("Change Password Error:", error);
+
+        return res.status(500).json({
+            error: "Failed to change password"
+        });
     }
-}
+};

@@ -1,16 +1,29 @@
 import { Loader2Icon, LogInIcon, LogOutIcon, CheckCircle2Icon, ArrowRightIcon } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import api from "../../api/axios";
 
 const CheckinButton = ({ todayRecord, onAction }) => {
   const [loading, setLoading] = useState(false);
 
   const handleAttendance = async () => {
     setLoading(true);
+    console.log("1. START");
 
-    setTimeout(() => {
+    try {
+      console.log("2. BEFORE POST");
+      await api.post("/attendance");
+      console.log("3. POST SUCCESS");
+
+      await onAction();
+      console.log("4. onAction SUCCESS");
+    } catch (error) {
+      console.error("ATTENDANCE ERROR:", error);
+      toast.error(error?.response?.data?.error || error?.message);
+    } finally {
+      console.log("5. FINALLY");
       setLoading(false);
-      onAction();
-    }, 1000);
+    }
   };
 
   // Work day already completed

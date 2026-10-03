@@ -1,23 +1,30 @@
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { dummyPayslipData, dummyEmployeeData } from "../assets/assets";
+import toast from "react-hot-toast";
+import api from "../api/axios";
 import Loading from "../component/Loading";
 import GeneratePaylipForm from "../component/paylips/GeneratePaylipForm";
 import PayLipsList from "../component/paylips/PayLipsList";
+import { useAuth } from "../context/AuthContext";
 
 const Paylips = () => {
   const [paylips, setPayLips] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const isAdmin = true;
+
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   const fetchPaylips = useCallback(async () => {
-    setPayLips(dummyPayslipData);
-
-    setTimeout(() => {
+    try {
+      const res = await api.get("/paylips");
+      setPayLips(res.data.data);
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error?.message);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   }, []);
 
   useEffect(() => {
@@ -25,7 +32,11 @@ const Paylips = () => {
   }, [fetchPaylips]);
 
   useEffect(() => {
-    if (isAdmin) setEmployees(dummyEmployeeData);
+    if (isAdmin)
+      api
+        .get("/employees")
+        .then(res => setEmployees(res.data.filter(e => !e.isDeleted)))
+        .catch(() => {});
   }, [isAdmin]);
 
   if (loading) return <Loading />;
@@ -45,7 +56,7 @@ const Paylips = () => {
         {/* Admin Placeholder */}
         {isAdmin && (
           <div className="rounded-xl shadow-sm">
-            <GeneratePaylipForm employees={employees} onSucces={fetchPaylips} />
+            <GeneratePaylipForm employees={employees} onSuccess={fetchPaylips} />
           </div>
         )}
       </div>

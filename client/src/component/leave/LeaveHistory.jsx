@@ -1,6 +1,8 @@
 import { Check, Loader2, X } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
+import api from "../../api/axios";
+import toast from "react-hot-toast";
 
 const LeaveHistory = ({ leaves = [], isAdmin, onUpdate }) => {
   const [processing, setProcessing] = useState(null);
@@ -8,14 +10,14 @@ const LeaveHistory = ({ leaves = [], isAdmin, onUpdate }) => {
   const handleStatusUpdate = async (id, status) => {
     setProcessing(id);
 
-    // Nanti ketika backend sudah siap,
-    // API update status ditaruh di sini.
-    console.log("Update leave:", id, status);
-
-    setTimeout(() => {
+    try {
+      await api.patch(`/leave/${id}`, { status });
+      onUpdate();
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
+    } finally {
       setProcessing(null);
-      onUpdate?.();
-    }, 700);
+    }
   };
 
   return (

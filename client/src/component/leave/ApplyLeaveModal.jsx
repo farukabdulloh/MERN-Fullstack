@@ -1,5 +1,7 @@
 import { CalendarDays, FileText, Loader2, Send, X } from "lucide-react";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import api from "../../api/axios";
 
 const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -12,18 +14,19 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
 
-    // Nanti ketika backend sudah siap,
-    // proses submit leave request API akan ditaruh di sini.
-    console.log("Leave request submitted");
-
-    setTimeout(() => {
-      setLoading(false);
-      onSuccess?.();
+    try {
+      await api.post("/leave", data);
+      onSuccess();
       onClose();
-    }, 1000);
+    } catch (error) {
+      toast.error(error.response?.data?.error || error?.message);
+    }
+
+    console.log("Leave request submitted");
   };
 
   if (!open) return null;
@@ -148,7 +151,6 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
           <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
             <button
               type="button"
-              onClick={onClose}
               disabled={loading}
               className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-50 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >

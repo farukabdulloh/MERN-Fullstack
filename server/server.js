@@ -21,7 +21,8 @@ const PORT = process.env.PORT || 4000
 // Midleware
 app.use(cors())
 app.use(express.json())
-app.use(multer().none())
+app.use("/uploads", express.static("uploads"))
+
 
 // Routes
 app.get('/', (req, res) => res.send('Server is running'))

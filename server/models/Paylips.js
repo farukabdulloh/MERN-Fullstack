@@ -4,14 +4,14 @@ const paylipsSchema = new mongoose.Schema({
     employeeId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Paylips',
+        ref: 'Employee',
     },
-    month: { type: Number, require: true },
-    year: { type: Number, require: true },
-    basicSalary: { type: Number, require: true },
+    month: { type: Number, required: true },
+    year: { type: Number, required: true },
+    basicSalary: { type: Number, required: true },
     allowances: { type: Number, default: 0 },
     deductions: { type: Number, default: 0 },
-    netSalary: { type: Number, require: true },
+    netSalary: { type: Number, required: true },
 
 }, { timestamps: true })
 

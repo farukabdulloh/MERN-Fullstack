@@ -4,7 +4,7 @@ import { protect, protectAdmin } from '../middleware/auth.js';
 
 const leaveRouter = Router();
 
-leaveRouter.post('/', protect, protectAdmin, createLeave)
+leaveRouter.post('/', protect, createLeave)
 leaveRouter.get('/', protect, getLeave)
 leaveRouter.patch('/:id', protect, protectAdmin, updateLeave)
 

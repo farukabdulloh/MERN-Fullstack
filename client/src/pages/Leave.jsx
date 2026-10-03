@@ -4,23 +4,33 @@ import { dummyLeaveData } from "../assets/assets";
 import Loading from "../component/Loading";
 import LeaveHistory from "../component/leave/LeaveHistory";
 import ApplyLeaveModal from "../component/leave/ApplyLeaveModal";
+import { useAuth } from "../context/AuthContext.jsx";
+import api from "../api/axios";
+import toast from "react-hot-toast";
 
 const Leave = () => {
+  const { user } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const isAdmin = user?.role === "ADMIN";
 
-  // For testing
-  const isAdmin = true;
-
-  const fetchLeaves = useCallback(() => {
-    setLoading(true);
-    setLeaves(dummyLeaveData);
-
-    setTimeout(() => {
+  useEffect(() => {
+    console.log("LEAVE USER:", user);
+    console.log("LEAVE ROLE:", user?.role);
+    console.log("LEAVE IS ADMIN:", isAdmin);
+  }, [user, isAdmin]);
+  const fetchLeaves = useCallback(async () => {
+    try {
+      const res = await api.get("/leave");
+      setLeaves(res.data.data || []);
+      if (res.data.employee?.isDeleted) setIsDeleted(true);
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   }, []);
 
   useEffect(() => {
@@ -117,7 +127,7 @@ const Leave = () => {
       <LeaveHistory leaves={leaves} isAdmin={isAdmin} onUpdate={fetchLeaves} />
 
       {/* Apply Leave Modal */}
-      <ApplyLeaveModal open={showModal} onClose={() => setShowModal(false)} onSucces={fetchLeaves} />
+      <ApplyLeaveModal open={showModal} onClose={() => setShowModal(false)} onSuccess={fetchLeaves} />
     </div>
   );
 };
