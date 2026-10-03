@@ -32,13 +32,15 @@ export const clockInOut = async (req, res) => {
                 status: isLate ? "LATE" : 'PRESENT'
             })
 
-            await inngest.send({
+            const result = await inngest.send({
                 name: "employee/check-out",
                 data: {
                     employeeId: employee._id,
                     attendanceId: attendance._id
                 }
-            })
+            });
+
+            console.log("INNGEST EVENT SENT:", result);
 
             return res.json({
                 success: true, type: "CHECK_IN",
