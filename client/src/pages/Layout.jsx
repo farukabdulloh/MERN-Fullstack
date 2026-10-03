@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import Loading from "../component/Loading";
-import SideBar from "../component/SideBar";
+import Sidebar from "../component/Sidebar";
 import { useAuth } from "../context/AuthContext";
 
 const Layout = () => {
@@ -10,7 +10,7 @@ const Layout = () => {
   if (!user) return <Navigate to="/login" />;
   return (
     <div className="flex h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50/35">
-      <SideBar />
+      <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="p-4 pt-16 sm:p-6 sm:pt-6 lg:p-8 max-w-400 mx-auto">
           <Outlet />

@@ -14,9 +14,10 @@ const autoCheckout = inngest.createFunction(
         const { employeeId, attendanceId } = event.data;
 
         // wait 9 hours
-        await step.sleepUntil('wait-for-the-9-hours'), new Date(new Date().getTime(
-            + 0 * 60 * 60 * 1000
-        ))
+        await step.sleepUntil(
+            "wait-for-the-9-hours",
+            new Date(Date.now() + 9 * 60 * 60 * 1000)
+        );
 
         // get Attendance data
         let attendance = await Attendance.findById(attendanceId)
@@ -26,7 +27,7 @@ const autoCheckout = inngest.createFunction(
 
             // send reminder email
             await sendEmail({
-                to: employee.email,
+                to: employee.workEmail,
                 subject: "Attendance Check-Out Remainder",
                 body: `   <div style="max-width:600px">
                 <h2>Hi ${employee.firstName},</h2>
@@ -59,10 +60,11 @@ const autoCheckout = inngest.createFunction(
             </div>`
             })
 
-            // after 10 hours, mark attendance as checked out with status "LATE"
-            await step.sleepUntil('wait-for-the-1-hours'), new Date(new Date().getTime(
-                + 1 * 60 * 60 * 1000
-            ))
+            // mark attendance as checked out with status "LATE"
+            await step.sleepUntil(
+                "wait-for-the-1-hours",
+                new Date(Date.now() + 1 * 60 * 60 * 1000)
+            );
 
             attendance = await Attendance.findById(attendanceId)
             if (!attendance?.checkOut) {
@@ -83,9 +85,10 @@ const leaveApplicationReminder = inngest.createFunction(
     async ({ event, step }) => {
         const { leaveApplicationId } = event.data
 
-        // wait 24 hours
-        await StickyNotePlus.sleepUntil('wait-fot-the-24-hours', new Date(new Date().
-            getTime() + 24 * 60 * 60 * 1000))
+        await step.sleepUntil(
+            "wait-for-the-24-hours",
+            new Date(Date.now() + 24 * 60 * 60 * 1000)
+        );
 
         const leaveApplication = await LeaveApplication.findById(leaveApplicationId)
         if (leaveApplication?.status === "PENDING") {
@@ -128,8 +131,7 @@ const leaveApplicationReminder = inngest.createFunction(
 // Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employees
 
 const attendanceReminderCron = inngest.createFunction(
-    { id: "attendance-reminder-cron", trigger: [{ cron: '0 0 6 * * *' }] },
-    //00:60 UTC = 11:30 am IST
+    { id: "attendance-reminder-cron", trigger: [{ cron: "TZ=Asia/Jakarta 30 11 * * *" }] },
     async ({ step }) => {
         // Step 1:Get today's date range(IST)
         const today = await step.run("get-today-date", () => {
@@ -148,7 +150,7 @@ const attendanceReminderCron = inngest.createFunction(
                 }).lean();
                 return employees.map((e) => ({
                     _id: e._id.toString(),
-                    firstName: e.firstName, lastName: e.lastName, email: e.email,
+                    firstName: e.firstName, lastName: e.lastName, email: e.workEmail,
                     department: e.department
                 }))
             })
@@ -177,8 +179,7 @@ const attendanceReminderCron = inngest.createFunction(
         if (absentEmployees.length > 0) {
             await step.run('send-reminder-emails', async () => {
                 const emailPromises = absentEmployees.map((emp) => {
-                    // send email
-                    sendEmail({
+                    return sendEmail({
                         to: emp.email,
                         subject: "Attendance Reminder - Please Mark Your Attendance",
                         body: `   <div style="max-width:600px; font-family:Arial, sans-serif;">
@@ -215,6 +216,7 @@ const attendanceReminderCron = inngest.createFunction(
             })
         }
 
+        await Promise.all(emailPromises)
         return {
             totalActive: activeEmployees.length,
             onLeave: onLeavesIds.length,
