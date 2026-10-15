@@ -1,6 +1,7 @@
 import { PencilIcon, TrashIcon, RotateCcw, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../api/axios";
+import { getImageUrl } from "../assets/assets";
 
 const EmployeesCard = ({ employee, onDelete, onEdit }) => {
   const handleDelete = async () => {
@@ -48,7 +49,7 @@ const EmployeesCard = ({ employee, onDelete, onEdit }) => {
           {" "}
           {employee.profileImage ? (
             <img
-              src={`http://localhost:4000/${employee.profileImage.replaceAll("\\", "/")}`}
+              src={getImageUrl(employee.profileImage)}
               alt={`${employee.firstName} ${employee.lastName}`}
               className={`h-full w-full object-cover transition-all duration-200 ${
                 employee.isDeleted ? "opacity-60 grayscale" : ""

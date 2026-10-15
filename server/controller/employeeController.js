@@ -101,7 +101,7 @@ export const createEmployees = async (req, res) => {
             deductions: Number(deductions) || 0,
             joinDate: new Date(date),
             bio: bio || "",
-            profileImage: req.file ? req.file.path : ""
+            profileImage: req.file ? `uploads/${req.file.filename}` : ""
         });
 
         return res.status(201).json({
@@ -136,7 +136,7 @@ export const updateEmployees = async (req, res) => {
         const employee = await Employee.findById(id);
         if (!employee) return res.status(404).json({ error: ' Employee not found' })
 
-        await Employee.findByIdAndUpdate(id, {
+        const updateData = {
             firstName,
             lastName,
             workEmail,
@@ -148,7 +148,13 @@ export const updateEmployees = async (req, res) => {
             deductions: Number(deductions) || 0,
             employmentStatus: employmentStatus || 'ACTIVE',
             bio: bio || "",
-        })
+        };
+
+        if (req.file) {
+            updateData.profileImage = `uploads/${req.file.filename}`;
+        }
+
+        await Employee.findByIdAndUpdate(id, updateData);
 
         // update user record
         const userUpdate = { email: workEmail }
@@ -156,7 +162,7 @@ export const updateEmployees = async (req, res) => {
         if (password) userUpdate.password = await bcrypt.hash(password, 10)
         await User.findByIdAndUpdate(employee.userId, userUpdate);
 
-        return res.status(201).json({ succes: true })
+        return res.status(200).json({ success: true })
 
     } catch (error) {
         if (error.code === 11000) {

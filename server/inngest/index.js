@@ -83,7 +83,7 @@ const autoCheckout = inngest.createFunction(
 const leaveApplicationReminder = inngest.createFunction(
     { id: "leave-application-reminder", trigger: [{ event: 'leave/pending' }] },
     async ({ event, step }) => {
-        const { leaveApplicationId } = event.data
+        const leaveApplicationId = event.data?.leaveApplicationId || event.data?.LeaveApplicationId;
 
         await step.sleepUntil(
             "wait-for-the-24-hours",
@@ -213,10 +213,10 @@ const attendanceReminderCron = inngest.createFunction(
                     </div>`
                     })
                 })
+                await Promise.all(emailPromises)
             })
         }
 
-        await Promise.all(emailPromises)
         return {
             totalActive: activeEmployees.length,
             onLeave: onLeavesIds.length,

@@ -336,3 +336,13 @@ export function getDayTypeDisplay(record) {
   }
   return { label: "—", className: "" };
 }
+
+export function getImageUrl(imagePath) {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  const baseUrl = (import.meta.env.VITE_BASE_URL || "http://localhost:4000").replace(/\/+$/, "");
+  const cleanPath = imagePath.replace(/^[\/\\]+/, "").replaceAll("\\", "/");
+  return `${baseUrl}/${cleanPath}`;
+}

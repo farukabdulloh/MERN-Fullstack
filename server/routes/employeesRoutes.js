@@ -9,10 +9,24 @@ import {
 } from '../controller/employeeController.js';
 import { protect, protectAdmin } from '../middleware/auth.js';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 
-const upload = multer({
-    dest: "/tmp/uploads/"
-})
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads', { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage });
 const employeesRouter = Router();
 
 employeesRouter.get('/', protect, protectAdmin, getEmployees)

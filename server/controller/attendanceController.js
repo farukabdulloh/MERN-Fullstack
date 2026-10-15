@@ -65,7 +65,9 @@ export const clockInOut = async (req, res) => {
             existing.dayType = dayType;
 
             await existing.save();
-            return res.json({ succes: true, type: "CHECK_OUT", data: existing })
+            return res.json({ success: true, type: "CHECK_OUT", data: existing })
+        } else {
+            return res.status(400).json({ error: "Attendance for today has already been completed" })
         }
 
     } catch (error) {
@@ -85,6 +87,7 @@ export const getAttendance = async (req, res) => {
         const history = await Attendance.find({ employeeId: employee._id }).sort({ date: -1 }).limit(limit)
 
         return res.json({
+            data: history,
             date: history,
             employee: { isDeleted: employee.isDeleted }
         })

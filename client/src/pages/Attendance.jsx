@@ -16,8 +16,8 @@ const Attendance = () => {
     try {
       const res = await api.get("/attendance");
       const json = res.data;
-      setHistory(json.date || []);
-      if (json.employee?.isDeleted) setIsDeleted(false);
+      setHistory(json.data || json.date || []);
+      if (json.employee?.isDeleted) setIsDeleted(true);
     } catch (error) {
       toast.error(error?.response?.data?.error || error?.message);
     } finally {

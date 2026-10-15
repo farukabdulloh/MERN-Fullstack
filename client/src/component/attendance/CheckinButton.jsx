@@ -45,7 +45,7 @@ const CheckinButton = ({ todayRecord, onAction }) => {
     );
   }
 
-  const isCheckedIn = !!todayRecord?.isCheckedIn;
+  const isCheckedIn = !!todayRecord?.checkIn && !todayRecord?.checkOut;
 
   return (
     <div className="w-full">

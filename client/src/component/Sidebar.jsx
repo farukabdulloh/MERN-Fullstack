@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { getImageUrl } from "../assets/assets";
 
 const SideBar = () => {
   const { pathname } = useLocation();
@@ -137,7 +138,7 @@ const SideBar = () => {
             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-indigo-500/20 bg-indigo-500/10">
               {userImage ? (
                 <img
-                  src={`${import.meta.env.VITE_BASE_URL}/${userImage.replaceAll("\\", "/")}`}
+                  src={getImageUrl(userImage)}
                   alt={userName}
                   className="h-full w-full object-cover"
                 />
