@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowRightIcon, Building2Icon, CalendarCheckIcon, FileTextIcon, UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -34,9 +33,9 @@ const AdminDashboard = ({ data }) => {
     <div className="animate-fade-in space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">Admin Dashboard</h1>
 
-        <p className="text-sm text-slate-500 mt-1">Overview of your organization's workforce</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Overview of your organization's workforce</p>
       </div>
 
       {/* Statistics */}
@@ -44,21 +43,21 @@ const AdminDashboard = ({ data }) => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+            className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
           >
             {/* Accent */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-200 group-hover:bg-indigo-500 transition-colors duration-200" />
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-200 dark:bg-slate-700 group-hover:bg-indigo-500 transition-colors duration-200" />
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
 
-                <p className="text-2xl font-bold text-slate-900 mt-2">{stat.value}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-2">{stat.value}</p>
 
-                <p className="text-xs text-slate-400 mt-1">{stat.description}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{stat.description}</p>
               </div>
 
-              <stat.icon className="w-10 h-10 p-2.5 rounded-xl bg-slate-100 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors duration-200" />
+              <stat.icon className="w-10 h-10 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/40 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200" />
             </div>
           </div>
         ))}
@@ -66,7 +65,7 @@ const AdminDashboard = ({ data }) => {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Quick Actions</h2>
+        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3">Quick Actions</h2>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
@@ -79,7 +78,7 @@ const AdminDashboard = ({ data }) => {
 
           <Link
             to="/leave"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors duration-200"
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
           >
             Review Leave Requests
           </Link>

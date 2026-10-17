@@ -30,17 +30,17 @@ const LoginForm = ({ role, title, subtitle }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 dark:bg-slate-950">
       <LoginLeftSide />
 
       <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
           {/* Login Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-7 sm:p-9">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm p-7 sm:p-9">
             {/* Back */}
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-600 transition-colors mb-8"
+              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors mb-8"
             >
               <ArrowLeftIcon size={16} />
               Back to portal
@@ -48,16 +48,16 @@ const LoginForm = ({ role, title, subtitle }) => {
 
             {/* Heading */}
             <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500 mb-2">{role} portal</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-2">{role} portal</p>
 
-              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 tracking-tight">{title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">{title}</h1>
 
-              <p className="text-slate-400 text-sm mt-2 leading-relaxed">{subtitle}</p>
+              <p className="text-slate-400 dark:text-slate-500 text-sm mt-2 leading-relaxed">{subtitle}</p>
             </div>
 
             {/* Error */}
             {error && (
-              <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-xl flex items-start gap-3">
+              <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-sm rounded-xl flex items-start gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
                 {error}
               </div>
@@ -67,7 +67,7 @@ const LoginForm = ({ role, title, subtitle }) => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Email Address</label>
 
                 <input
                   type="email"
@@ -75,13 +75,13 @@ const LoginForm = ({ role, title, subtitle }) => {
                   onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="dodi@example.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 outline-none transition focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:bg-white dark:focus:bg-slate-800/80 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-600"
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Password</label>
 
                 <div className="relative">
                   <input
@@ -90,12 +90,12 @@ const LoginForm = ({ role, title, subtitle }) => {
                     onChange={e => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 outline-none transition focus:bg-white focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                    className="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:bg-white dark:focus:bg-slate-800/80 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-600"
                   />
 
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeIcon size={18} /> : <EyeClosedIcon size={18} />}
@@ -117,7 +117,7 @@ const LoginForm = ({ role, title, subtitle }) => {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-slate-400 mt-6">© 2026 Employee Management System</p>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-6">© 2026 Employee Management System</p>
         </div>
       </div>
     </div>

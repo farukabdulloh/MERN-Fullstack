@@ -5,7 +5,9 @@ import {
   FileTextIcon,
   LayoutDashboardIcon,
   MenuIcon,
+  MoonIcon,
   Settings,
+  SunIcon,
   UserIcon,
   XIcon,
   BriefcaseBusinessIcon,
@@ -17,6 +19,7 @@ import { Link, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../assets/assets";
+import { useTheme } from "../context/ThemeContext";
 
 const SideBar = () => {
   const { pathname } = useLocation();
@@ -24,6 +27,8 @@ const SideBar = () => {
   const [userName, setUserName] = useState("");
   const [userImage, setUserImage] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { theme, toggleTheme } = useTheme();
 
   const { user, loading, logout } = useAuth();
 
@@ -202,7 +207,22 @@ const SideBar = () => {
       </nav>
 
       {/* Logout */}
-      <div className="mt-auto border-t border-white/10 px-3 py-4">
+      <div className="mt-auto border-t border-white/10 px-3 py-4 space-y-1">
+        {/* Theme Toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="group flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-slate-200"
+          aria-label="Toggle dark mode"
+        >
+          {theme === "dark" ? (
+            <SunIcon className="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-amber-400" />
+          ) : (
+            <MoonIcon className="h-5 w-5 text-slate-500 transition-colors duration-200 group-hover:text-indigo-300" />
+          )}
+          <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+        </button>
+
         <button
           type="button"
           onClick={handleLogOut}

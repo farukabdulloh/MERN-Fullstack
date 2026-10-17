@@ -1,7 +1,6 @@
 import express from "express";
 import cors from 'cors';
 import 'dotenv/config';
-import multer from "multer";
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import profileRouter from "./routes/profileRoutes.js";
@@ -26,6 +25,18 @@ app.use("/uploads", express.static("uploads"))
 
 // Routes
 app.get('/', (req, res) => res.send('Server is running'))
+
+// Vercel invokes the exported Express app as a function. Keep database
+// connection setup inside the request lifecycle instead of blocking startup.
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 app.use('/api/auth', authRoutes)
 app.use('/api/employees', employeesRoutes)
 app.use('/api/profile', profileRouter)
@@ -36,5 +47,14 @@ app.use('/api/dashboard', dashboardRouter)
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-await connectDB()
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))    
+export default app;
+
+// Vercel manages the HTTP listener. Start one only for local development.
+if (process.env.VERCEL !== '1') {
+    connectDB()
+        .then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)))
+        .catch((error) => {
+            console.error('Server startup failed:', error.message);
+            process.exitCode = 1;
+        });
+}

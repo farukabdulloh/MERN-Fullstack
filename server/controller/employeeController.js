@@ -1,6 +1,7 @@
 import Employee from "../models/Employee.js";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import { uploadProfileImage } from "../services/cloudinary.js";
 
 // Get employees
 // GET /api/employees
@@ -77,6 +78,18 @@ export const createEmployees = async (req, res) => {
             });
         }
 
+        let profileImage = "";
+        if (req.file) {
+            try {
+                profileImage = await uploadProfileImage(req.file.buffer);
+            } catch (error) {
+                const message = error.message?.startsWith('Cloudinary is not configured.')
+                    ? error.message
+                    : 'Cloudinary could not store the profile image.';
+                return res.status(502).json({ error: message });
+            }
+        }
+
         const hashed = await bcrypt.hash(password, 10);
 
         console.log("STEP 2 - SEBELUM CREATE USER");
@@ -101,7 +114,7 @@ export const createEmployees = async (req, res) => {
             deductions: Number(deductions) || 0,
             joinDate: new Date(date),
             bio: bio || "",
-            profileImage: req.file ? `uploads/${req.file.filename}` : ""
+            profileImage
         });
 
         return res.status(201).json({
@@ -136,6 +149,18 @@ export const updateEmployees = async (req, res) => {
         const employee = await Employee.findById(id);
         if (!employee) return res.status(404).json({ error: ' Employee not found' })
 
+        let profileImage;
+        if (req.file) {
+            try {
+                profileImage = await uploadProfileImage(req.file.buffer);
+            } catch (error) {
+                const message = error.message?.startsWith('Cloudinary is not configured.')
+                    ? error.message
+                    : 'Cloudinary could not store the profile image.';
+                return res.status(502).json({ error: message });
+            }
+        }
+
         const updateData = {
             firstName,
             lastName,
@@ -150,9 +175,7 @@ export const updateEmployees = async (req, res) => {
             bio: bio || "",
         };
 
-        if (req.file) {
-            updateData.profileImage = `uploads/${req.file.filename}`;
-        }
+        if (profileImage) updateData.profileImage = profileImage;
 
         await Employee.findByIdAndUpdate(id, updateData);
 
