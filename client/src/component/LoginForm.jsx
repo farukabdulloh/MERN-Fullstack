@@ -1,4 +1,3 @@
-import React from "react";
 import LoginLeftSide from "./LoginLeftSide";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, EyeClosedIcon, EyeIcon, Loader2Icon } from "lucide-react";
@@ -48,9 +47,13 @@ const LoginForm = ({ role, title, subtitle }) => {
 
             {/* Heading */}
             <div className="mb-8">
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-2">{role} portal</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 mb-2">
+                {role} portal
+              </p>
 
-              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">{title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">
+                {title}
+              </h1>
 
               <p className="text-slate-400 dark:text-slate-500 text-sm mt-2 leading-relaxed">{subtitle}</p>
             </div>
@@ -67,14 +70,16 @@ const LoginForm = ({ role, title, subtitle }) => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                  Email Address
+                </label>
 
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
-                  placeholder="dodi@example.com"
+                  placeholder="user@example.com"
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:bg-white dark:focus:bg-slate-800/80 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-600"
                 />
               </div>
@@ -117,7 +122,9 @@ const LoginForm = ({ role, title, subtitle }) => {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-6">© 2026 Employee Management System</p>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-6">
+            © 2026 Employee Management System
+          </p>
         </div>
       </div>
     </div>
